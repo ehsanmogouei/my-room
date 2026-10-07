@@ -1,0 +1,37 @@
+# ---------------------------------------------------------------------------
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Create everything at once:
+#   1. push this repository to GitHub
+#   2. Render dashboard → New → Blueprint → pick the repository
+#
+# Auto-deploy is deliberately OFF: the GitHub Actions workflow in
+# `.github/workflows/ci.yml` deploys only after lint, typecheck and build pass.
+# To let Render deploy on every push instead, set `autoDeployTrigger: commit`
+# and delete the `deploy` job from the workflow.
+# ---------------------------------------------------------------------------
+
+services:
+  - type: web
+    name: my-room
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /fa
+    autoDeployTrigger: 'off'
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+
+      # Used for canonical URLs, the sitemap, RSS and OG images.
+      # Set this to your real domain in the Render dashboard, or leave it
+      # unset and Render's own URL (RENDER_EXTERNAL_URL) is used instead.
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+
+      # Draft posts are always hidden in production; this only helps if you
+      # deliberately want them visible on a preview service.
+      - key: NEXT_PUBLIC_SHOW_DRAFTS
+        value: '0'

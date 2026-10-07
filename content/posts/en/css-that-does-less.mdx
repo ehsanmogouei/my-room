@@ -1,0 +1,77 @@
+---
+title: "CSS that does less"
+date: "2025-11-08"
+summary: "A year of additions is gone, and the stylesheet is better for it. Notes on deleting CSS instead of writing more, and on the selectors that made it possible."
+tags: ["css", "frontend", "craft"]
+cover: "/gallery/placeholder-04.jpg"
+draft: false
+---
+
+I did an honest audit of my stylesheet last month, which is different from the audit I do before a release. The release audit asks "what can I add before Friday". The honest one asks "which of these lines has ever earned its place", and it is much less comfortable.
+
+The result: about four hundred lines gone, and nothing looks different. Here is the honest chart of how that happened.
+
+| Period | Lines of CSS | What I was doing |
+| --- | --- | --- |
+| Two years ago | 1180 | Faking a lot of things the browser already knew |
+| Last year | 1240 | Adding features, removing nothing |
+| After the audit | 830 | Deleting, and using three selectors properly |
+
+![A colour study: swatches I mixed while rebuilding the palette](/gallery/placeholder-04.jpg)
+
+## Three ways CSS grows for no reason
+
+### Classes that duplicate browser state
+
+The worst offender in my own code was a habit of encoding state that the browser already tracks. A card with an image got `card--with-image`. A card with a long title got `card--long-title`. Each one was a small promise to keep two things in sync forever, and I broke that promise regularly.
+
+The replacement is one selector:
+
+```css
+.card:has(> img) {
+  grid-template-rows: auto 1fr;
+}
+
+.card:has(h3:first-child) {
+  padding-block-start: var(--space-3);
+}
+```
+
+Now adding an image to the markup changes the layout, and I do not have to remember anything. The rule describes a relationship instead of a decision I made once in a component file. There is a good write-up of what else `:has()` unlocks on [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/:has).
+
+### Layouts that should be one property
+
+Most of my media queries were doing arithmetic that `grid` and `clamp()` now do on their own. A sidebar that collapses under a threshold, cards that fit as many per row as the container allows, body text that scales between two sizes: all of it is one declaration each, and none of it needs a breakpoint.
+
+```css
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+  gap: var(--space-2);
+}
+```
+
+I have read that snippet enough times that I can write it from memory, which is a better use of memory than the four breakpoints it replaced.
+
+### Decorations that a border would cover
+
+I have built the fake drop shadow out of absolutely positioned pseudo-elements more times than I want to admit. A hairline plus an inset shadow gets the same result in two lines, and it survives a background image underneath it.
+
+> Every line of CSS is a small promise to maintain it forever. Most of my additions were never worth that promise.
+
+## What the deletions actually taught me
+
+The rules I removed were not wrong. They were correct answers to questions I had asked eighteen months earlier, kept alive long after the questions changed. Nobody deletes a rule that still works, which is exactly how a stylesheet turns into an archaeology site.
+
+So I try to treat CSS the way I treat comments and dependencies: guilty until proven load-bearing. When I open a file, I pick one thing and delete it, then look at the page. If nothing moved, it was already dead and I have just made the file shorter for whoever reads it next.
+
+The counter-argument is real, and I have made it to myself: what if the design changes and I need that rule back? My answer after a year of this is that I have needed a deleted rule back exactly twice, and both times I wrote a better one. Meanwhile I have spent far more time reading CSS I was afraid to remove.
+
+## What I use instead of more CSS
+
+- System fonts for body text, and one variable font for headings
+- Custom properties for anything that appears in more than one rule
+- Container queries for components, and the viewport only at the page level
+- [Every Layout](https://every-layout.dev/) as the reference I return to whenever I am about to write a new primitive
+
+That last link has saved me more lines than any refactor. If you read exactly one thing about layout, make it that one, and then go delete something.

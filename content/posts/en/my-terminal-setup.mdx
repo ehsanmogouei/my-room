@@ -1,0 +1,73 @@
+---
+title: "My terminal setup, after ten years of fiddling"
+date: "2025-02-19"
+summary: "I spent a decade collecting shell tools and aliases. What is left after all that is a short list, and most of the value came from settling on it."
+tags: ["tooling", "terminal", "workflow"]
+draft: false
+---
+
+I have been carrying variations of the same shell configuration for ten years. Every so often I would find a new prompt, a new way to jump between directories, a new tool that replaced `grep` with something faster, and I would spend an evening wiring it up. The configuration grew. My speed did not.
+
+Last winter I sat down with the file and counted what was in it. About six hundred lines, of which I could honestly explain maybe eighty. So I rebuilt it from nothing, adding a line back only when I missed it during a normal working day.
+
+## What actually survived
+
+| Tool | Job |
+| --- | --- |
+| fish | The shell itself, with completions that work without configuration |
+| starship | The prompt, mostly for the git status and the exit code |
+| zoxide | `z proj` instead of typing a path for the four hundredth time |
+| fzf | Fuzzy matching for history, files and branches |
+| ripgrep | Search, which is the only thing I use more than the shell |
+| lazygit | When a rebase is going badly and I want to see it |
+
+Six tools. Three of them were in the configuration a decade ago in some form, which is a useful thing to know about myself.
+
+![Rain on a window, which is my favourite weather for terminal work](/gallery/placeholder-06.jpg)
+
+## The rules I ended up with
+
+### Aliases are for things I type wrong
+
+I used to keep an alias for everything. The problem is that an alias is a private language, and I work on at least three machines, only one of which has my exact configuration. Now an alias exists only if the command is long and I mistype it under pressure.
+
+```bash
+# long, and I get it wrong every single time
+alias gst='git status --short --branch'
+alias lg='lazygit'
+alias serve='python3 -m http.server 8000'
+
+# everything else is typed out, on purpose
+```
+
+The last line is the important one. If I type `git rebase --interactive main` a few hundred times, I keep the knowledge in my fingers and I do not need my dotfiles to work on a borrowed machine.
+
+### Everything lives in one repository
+
+Configuration, install script, and a list of what each program does and why. Setting up a new machine is one command and about four minutes, and the readme explains each file so that future me does not have to reverse-engineer a decision made in 2019.
+
+> If a tool needs a paragraph of explanation to justify itself, it does not get to stay.
+
+### Nothing that has to be updated weekly
+
+I have tried the heavily themed prompts and the plugin managers with two hundred packages. They are fun for a fortnight, then they need maintenance, and the maintenance is never the part of the day I look forward to. The current setup has gone eleven months without me changing anything except a colour.
+
+## The actual configuration
+
+Most of what remains is not a tool at all. It is a few settings that make the shell behave the way I expect:
+
+```bash
+set -g fish_greeting ""
+abbr --add gco "git checkout"
+abbr --add gst "git status --short --branch"
+set -x EDITOR nvim
+set -x PAGER less
+```
+
+Abbreviations rather than aliases, because they expand in the prompt and I can see what they will run before I press enter. That one change has saved me more grief than any plugin ever did.
+
+## What I would tell someone starting over
+
+Write down the five things you do most often in a terminal. Configure those, properly, and leave everything else alone for a month. What you miss will tell you what to add, and the list is usually shorter than expected.
+
+The other half of it is not technical: the value of a setup is that you stop noticing it. A configuration you are still tuning is a configuration that is still costing you attention. Mine is boring now, and I finished a lot more work this year because of it.

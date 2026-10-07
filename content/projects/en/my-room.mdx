@@ -1,0 +1,33 @@
+---
+title: "My Room"
+year: "2026"
+summary: "The virtual room you are standing in: a portfolio, a notebook and a gallery behind one door, rendered in three dimensions and readable without it."
+stack: ["Next.js", "TypeScript", "React Three Fiber", "Tailwind CSS", "MDX"]
+links:
+  - label: "Source"
+    href: "https://github.com/ehsanmogouei/my-room"
+cover: "/gallery/placeholder-08.jpg"
+featured: true
+order: 1
+---
+
+This is the site you are reading. It replaces four previous portfolios, all of which were grids of cards that I abandoned within a couple of months. The idea here was to build a place with landmarks instead: a desk for work, a bookshelf for writing, a wall of frames for pictures, a corkboard for links worth keeping.
+
+Everything in it is a plain file. Posts and projects are MDX with a small frontmatter block, the gallery and the corkboard are typed arrays, and the loader validates all of it at build time.
+
+![The wall of frames, inside the room](/gallery/placeholder-08.jpg)
+
+## What it does
+
+- Renders the same room twice: a three-dimensional scene for anyone who wants it, and a flat illustrated map for anyone who does not
+- Keeps Persian and English content in parallel folders, paired by filename, with full right-to-left support and Vazirmatn for Persian text
+- Highlights code blocks at build time with Shiki, so a post page ships no highlighting JavaScript
+- Fails the build, loudly naming the file, when a required frontmatter field is missing or malformed
+
+## What I learned
+
+The hard part was never the geometry. It was deciding that the 3D scene is decoration and not the product. My first attempt put the writing behind a WebGL context, and it took a friend opening the site on an old laptop to make me see how bad that trade was.
+
+The second lesson was about restraint with motion. Camera moves now respect `prefers-reduced-motion`, a marker click still goes through the router, and pressing the back button returns you where you were, because the room is a view of the content rather than a separate world with its own rules.
+
+If you want the longer version of both arguments, I wrote about them in [why I built a room instead of another portfolio](/blog/why-i-built-a-room).

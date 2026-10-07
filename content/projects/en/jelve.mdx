@@ -1,0 +1,32 @@
+---
+title: "Jelve"
+year: "2025"
+summary: "A playground for Persian typography: set the same sentence in several typefaces, tune the metrics that matter and see which one holds up."
+stack: ["React", "TypeScript", "Vite"]
+links:
+  - label: "Source"
+    href: "https://github.com/ehsanmogouei/jelve"
+  - label: "Live demo"
+    href: "https://jelve.example.com"
+cover: "/gallery/placeholder-02.jpg"
+featured: false
+order: 4
+---
+
+Jelve started as a private argument with myself about which Persian typeface to use on this site. I had four candidates, no way to compare them honestly, and a habit of judging fonts by whatever sentence happened to be on screen at the time. So I built a page that sets one sentence in every candidate at once, at several sizes, and lets me change the metrics until something breaks.
+
+The name means manifestation, which is a slightly grand word for a font comparison tool, but it was already taken in my head before I could stop it.
+
+## What it does
+
+- Sets a specimen across every installed Persian font, side by side, at 11, 14, 18 and 24 pixels
+- Exposes the metrics that actually decide readability in Persian: line height, letter spacing, word spacing and the font-variation axes for variable fonts
+- Includes a rhythm ruler that lays a baseline grid over the text so I can see which lines drift
+- Measures the rendered line count, which is the number I care about most, because a font that wraps one word onto a new line costs a paragraph of vertical space
+- Tracks the numerals question separately, since Latin digits and Persian digits change the texture of a paragraph more than most metric tweaks do
+
+## What I learned
+
+Persian typography is a separate education from Latin typography, and I had been assuming it was a translation of it. Letter joining means spacing behaves differently, the x-height intuition I rely on does not transfer, and a font that reads well at 14 pixels can fall apart completely at 11.
+
+The practical outcome: this site uses Vazirmatn for Persian text with a larger base size and looser line height than the English version, and I would not have arrived at those numbers by guessing. I wrote the longer version of that story in [what I learned this year](/blog/what-i-learned-this-year).

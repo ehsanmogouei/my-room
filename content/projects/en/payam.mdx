@@ -1,0 +1,27 @@
+---
+title: "Payam"
+year: "2025"
+summary: "A self-hosted notification relay: one HTTP endpoint in, a durable queue in SQLite, and delivery to whichever channels matter that week."
+stack: ["Go", "SQLite", "Docker"]
+links:
+  - label: "Source"
+    href: "https://github.com/ehsanmogouei/payam"
+order: 3
+---
+
+Payam means message. It is the smallest service I run that I would actually miss if it disappeared. Every script, cron job, backup and uptime check I own posts a single JSON object to one endpoint, and Payam decides where that message goes: Telegram, email, or a webhook into whatever tool is fashionable this month.
+
+I wrote it after a year of duplicate shell scripts that each knew how to talk to a different API. Now nothing but Payam knows about any of those APIs, and changing notification providers is a config edit rather than a hunt through crontabs.
+
+## What it does
+
+- Accepts one small JSON payload: a title, a body, a severity and an optional channel override
+- Writes every message to SQLite before attempting delivery, so a restart never loses anything
+- Retries with backoff and gives up after three failures, leaving the job for a human instead of looping forever
+- Groups noisy messages: identical alerts inside a configurable window are sent once, with a count appended
+
+## What I learned
+
+The queue is the whole project. My first version delivered inside the HTTP handler, which meant a slow Telegram API turned a status script into a hanging process, and a crash in the middle lost the message with no record it had ever existed. Moving to write first, deliver later made the service boring in the best way: the database always describes reality, and a restart is never an event.
+
+The second lesson was about one binary and one file. Payam is deployed as a static Go binary with a SQLite file next to it, and backing it up is copying that file. I have since applied the same shape to two other services, and I have stopped reaching for a container orchestra when a single process and a file will do.

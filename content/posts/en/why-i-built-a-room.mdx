@@ -1,0 +1,69 @@
+---
+title: "Why I built a room instead of another portfolio"
+date: "2026-03-14"
+summary: "I have made four portfolio sites and abandoned all of them. This one is a room you can walk into, and it is the first one I actually want to keep."
+tags: ["meta", "nextjs", "three-js", "design"]
+cover: "/gallery/placeholder-01.jpg"
+draft: false
+---
+
+Every couple of years I make a portfolio site. I pick a font, I write three case studies, I put a grid of rectangles on the home page, and then I abandon it about six weeks later. The pattern is boring enough that I finally sat down and asked why it keeps happening.
+
+The short answer: a portfolio is a shop window, and I do not have anything to sell. I am not looking for clients. I do not want a "let us work together" button at the bottom of every page. What I actually wanted was a place to put things down.
+
+![A desk lamp, a laptop and a mug of cold tea, photographed from above](/gallery/placeholder-01.jpg)
+
+## A room is easier to remember than a grid
+
+The thing that finally clicked for me is that a room has landmarks. A desk means work. A bookshelf means things I have read and written. A wall of frames means images. Once the metaphor was in place, every decision after it got easier, because I was no longer designing a layout, I was furnishing a place.
+
+The layout also stopped being arbitrary. Here is the whole information architecture of this site:
+
+| In the room | On the site | What lives there |
+| --- | --- | --- |
+| Desk | `/projects` | Things I am building or have finished |
+| Bookshelf | `/notebook` | Notes, essays, half-formed opinions |
+| Gallery wall | `/gallery` | Photographs and screenshots |
+| Corkboard | `/gallery#links` | Links I keep coming back to |
+| Lamp | everywhere | Switches the room between day and night |
+| Door | `/` | A way back out to the rest of the web |
+
+## Three decisions I would make again
+
+### The content is plain files
+
+Everything you are reading is an MDX file with a small frontmatter block. Posts live in `content/posts/fa` and `content/posts/en`, projects in `content/projects`, and the loader reads both folders at build time. There is no database, no CMS, no admin panel, and no draft-mode plugin. A translation is paired with its original by sharing a filename, which is the least clever solution available and therefore the one I have not broken yet.
+
+If a marker in the 3D scene points at something that does not exist, the build fails and prints the file name. All of my frontmatter mistakes get caught before a visitor ever sees them.
+
+### The room is decoration, not the product
+
+The three-dimensional scene loads after the text does, and if `prefers-reduced-motion` is set, you get a flat illustrated map of the same room with the same links in the same places. Nothing is reachable only by walking. I love the 3D room, but I am not going to hold my writing hostage behind a WebGL context.
+
+### Markers are just data
+
+The whole interactive layer is one array. Adding something to the room means adding one object to it:
+
+```ts
+export const hotspots: Hotspot[] = [
+  { id: 'desk', href: '/projects', position: [1.4, 0.72, -0.9], color: '#e8b06a' },
+  { id: 'bookshelf', href: '/notebook', position: [-2.1, 1.05, -1.6], color: '#8fb8a0' },
+]
+```
+
+Clicking a marker flies the camera to it and opens a small panel. Pressing `Escape` puts you back where you started, and the browser back button still works, because the panel is a route and not a modal.
+
+## What I would tell someone about to build one
+
+Make the boring version first. My first attempt was a full 3D apartment with doors that opened and a hallway, and I spent nine evenings on the hallway before writing a single word. The version you are standing in now started as a grey box with two lights and flat text on a plane, and it was ugly for about a week.
+
+The other thing: write the first three posts before you build anything. If you cannot fill a bookshelf, you do not need the bookshelf. You can see what came of mine in [the projects section](/projects) — this site is listed there alongside the others, mostly so I have to look at it.
+
+## Still on the list
+
+- Ambience, but muted by default and never autoplaying
+- Better book spines, since close-up they are clearly just boxes
+- A keyboard-only path through the whole room
+- Testing the scene on a laptop that is older than my career
+
+None of these are urgent. That is sort of the point.

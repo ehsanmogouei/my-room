@@ -1,0 +1,18 @@
+# Normalise line endings so the repository is identical on Windows and on the
+# Linux build workers that Render uses.
+* text=auto eol=lf
+
+# Binary assets should never be touched by the text filters.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff2 binary
+*.ttf binary
+*.mp4 binary
+*.webm binary
+
+# Lockfiles are generated; keeping them out of diffs makes review easier.
+package-lock.json -diff linguist-generated

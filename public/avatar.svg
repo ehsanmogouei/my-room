@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="An open door with light spilling out">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1b1f2e"/>
+      <stop offset="55%" stop-color="#3a2f3f"/>
+      <stop offset="100%" stop-color="#6b4a2f"/>
+    </linearGradient>
+    <linearGradient id="light" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd9a0" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#e0a35c" stop-opacity="0.35"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.62" cy="0.5" r="0.55">
+      <stop offset="0%" stop-color="#ffcf8f" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffcf8f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="256" height="256" rx="56" fill="url(#bg)"/>
+  <rect width="256" height="256" rx="56" fill="url(#glow)"/>
+
+  <!-- door frame -->
+  <rect x="80" y="52" width="104" height="152" rx="6" fill="#0d1017" opacity="0.55"/>
+  <!-- open door leaf -->
+  <path d="M92 60 L150 60 L150 196 L92 196 Z" fill="url(#light)"/>
+  <!-- light spilling onto the floor -->
+  <path d="M150 60 L192 74 L192 210 L150 196 Z" fill="#ffd9a0" opacity="0.18"/>
+  <!-- handle -->
+  <circle cx="140" cy="128" r="5" fill="#3a2a18" opacity="0.75"/>
+  <!-- floor line -->
+  <path d="M56 210 H200" stroke="#e0a35c" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,31 @@
+---
+title: "Chromaforge"
+year: "2025"
+summary: "A small tool for turning one seed colour into a full set of design tokens: an accessible ramp, paired neutrals and per-theme output."
+stack: ["TypeScript", "Vite", "Rust", "WebAssembly", "CSS"]
+links:
+  - label: "Source"
+    href: "https://github.com/ehsanmogouei/chromaforge"
+  - label: "Live demo"
+    href: "https://chromaforge.example.com"
+cover: "/gallery/placeholder-04.jpg"
+featured: true
+order: 2
+---
+
+I kept solving the same problem badly on every project: pick a brand colour, then spend an evening eyeballing lighter and darker versions of it until contrast ratios stopped embarrassing me. Chromaforge takes one seed colour and produces the whole set, with the contrast checks done during generation instead of after.
+
+The colour maths runs in a small Rust module compiled to WebAssembly, mostly because gamma-corrected interpolation is the one place where I actually noticed the difference in the output. The rest is plain TypeScript with no framework, since the interface is a form and a preview.
+
+## What it does
+
+- Generates an eleven-step ramp from a single seed, in OKLCH, with optional hue and chroma curves along the lightness scale
+- Reports the WCAG contrast ratio for every foreground and background pair, and refuses to emit a pair below the threshold you set
+- Emits tokens as CSS custom properties, JSON for a Tailwind config, or Swift and Kotlin constants for the two mobile projects I maintain
+- Supports multiple named themes over the same seed, so a dark mode is a second definition rather than a second palette
+
+## What I learned
+
+WebAssembly is not free. The module is about nine kilobytes after compression, and it needs a load step, a typed boundary and a fallback path for the rare browser that will not run it. For this particular job the trade was worth it; for the token formatting, which is ninety percent of the code, it would have been a mistake, and it took a rewrite to admit that.
+
+The other thing I learned is that the interesting design decisions are the constraint checks. A tool that only generates colours produces palettes nobody can ship. A tool that tells you which pair fails AA produces palettes that survive contact with a real project.

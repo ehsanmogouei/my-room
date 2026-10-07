@@ -1,0 +1,27 @@
+---
+title: "Kargah"
+year: "2024 — 2025"
+summary: "My personal dashboard: the only page I open every morning, pulling tasks, deploys and notes into one screen so nothing lives only in my head."
+stack: ["Next.js", "TypeScript", "SQLite", "Tailwind CSS"]
+links:
+  - label: "Source"
+    href: "https://github.com/ehsanmogouei/kargah"
+order: 5
+---
+
+Kargah is the Persian word for workshop, which is what this is: not a product, not a task manager anyone else should use, just the page I open with the first coffee. It reads from four places I was already keeping notes in, and turns them into one screen with three columns.
+
+The reason it exists is that I was losing things. A task written into a chat message, a deploy I meant to check, a link I saved at midnight: each one lived in a different surface, and each surface assumed I would come back to it. Kargah assumes nothing. If something is on the board, it is on the board until I move it.
+
+## What it does
+
+- Merges tasks from a plain markdown file, a GitHub issues list and a SQLite table into a single priority queue
+- Shows what is currently deployed on the two servers I run, with the commit each one is on
+- Keeps a running scratchpad that is a textarea and a save button, because that turned out to be the whole feature
+- Generates a weekly summary I read on Fridays: what moved, what did not, and what is still sitting in the same column it was in last week
+
+## What I learned
+
+Automating a workflow you do not have yet does not give you the workflow. My first version had labels, dependencies, estimates and a progress chart, and I used none of them. The rewrite kept exactly two concepts, now and later, and I have used it every working day since, which is a better metric than any feature list.
+
+The other lesson was the value of writing to a file I can read. The whole board is a markdown file and a SQLite table, both readable with `cat`, both in a git repository. When the app broke for a week I lost nothing, because the data was never inside the app.

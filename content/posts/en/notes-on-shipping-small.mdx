@@ -1,0 +1,69 @@
+---
+title: "Notes on shipping small"
+date: "2025-05-30"
+summary: "Small releases are not a personality trait, they are a technique. What I changed after a year of shipping a little to production every single day."
+tags: ["process", "shipping", "workflow"]
+draft: false
+---
+
+For a long time my release process was one big evening. Everything finished, merged, tested by hand, deployed, and then two days of fixing what the deploy broke. I told myself this was efficient, because it meant fewer interruptions. It was not efficient. It was a bet that nothing would go wrong, placed once a month, with the whole product on the table.
+
+Now I ship something small most days. The interesting part is not the frequency. It is that small releases force you to be honest about what "done" means.
+
+## The anatomy of a small release
+
+I have a rough shape for a change that is safe to ship, and it has four parts:
+
+1. One behaviour changes, or none at all if it is a refactor
+2. A test that would fail without the change, or an honest note saying why there is none
+3. A line in the changelog written for the person using the thing, not for me
+4. A way to undo it that takes less than a minute
+
+If I cannot write the third one, I do not understand the change well enough to ship it. More than once I have written a changelog line, read it back, and realised the feature was a worse idea than I thought at nine in the morning.
+
+> Ship the smallest thing that is true, then let the truth accumulate.
+
+That sentence is doing a lot of work in my head, and it took me a while to believe it. The version I used to believe was "ship the smallest thing that could work", which is different, and which is how you end up with three half-features pretending to be one.
+
+## The queue, in code
+
+The place this paid off most obviously was a background job that sends notifications. It used to do too much in one pass, which meant a failure halfway through left everything in an unclear state. The version that ships now does one thing and stops:
+
+```ts
+export async function drainQueue(db: Database, limit = 20): Promise<number> {
+  const jobs = await db.takeReady(limit)
+  let sent = 0
+
+  for (const job of jobs) {
+    const result = await deliver(job)
+
+    if (result.ok) {
+      await db.markDone(job.id)
+      sent += 1
+      continue
+    }
+
+    // Failures are counted, not hidden. Three strikes and it waits for a human.
+    await db.markFailed(job.id, result.reason)
+  }
+
+  return sent
+}
+```
+
+No retry loop inside the function. No sleeping. No infinite anything. If the process dies after the first job, the next run picks up the second one, and the state on disk always describes reality. The retry policy lives in the database, where I can look at it while eating lunch.
+
+## Four things that got easier
+
+- Rollbacks stopped being events, because there is almost nothing to roll back
+- Code review got faster, since a two-line diff is readable before the coffee goes cold
+- Bugs got smaller and more specific, which made them fixable
+- Deploys stopped being scary, which is the whole point
+
+There is a cost, and I want to be honest about it. Small releases mean more of them, which means more deploy logs, more changelog lines, and a steady background hum of coordination. On a team of one that is fine. On a bigger team it needs a habit, not a rule.
+
+## What still trips me up
+
+Long-running migrations. Anything that changes data and cannot be undone in a minute does not fit this process, and pretending otherwise is how you learn what a rollback plan is really for. My current answer is to do those on a Tuesday morning, slowly, with a copy of the database and a note in the calendar.
+
+The related habit is reading code before changing it, which I wrote about in [reading code slowly](/blog/reading-code-slowly). Small changes are only safe if you know what you are standing on, and that part does not compress.

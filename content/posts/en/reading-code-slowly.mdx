@@ -1,0 +1,61 @@
+---
+title: "Reading code slowly"
+date: "2025-07-22"
+summary: "I used to measure understanding in lines per hour. Now I open one file, read it like a story and stop when I can explain why every line is there."
+tags: ["reading", "craft", "process"]
+draft: false
+---
+
+There is a particular kind of tiredness that comes from reading code the wrong way. You start at the top of a repository you have never seen, open eleven files before you understand the first one, and end the evening with a browser full of tabs and no memory of what any of them contained. I did that for years and called it onboarding.
+
+What works better, for me, is almost embarrassing in how slow it is.
+
+## One file, read like a story
+
+I pick the smallest file that does something I care about and I read it in order, top to bottom, without jumping. When a function is called, I ask what it needs and what it returns, and I try to answer that from the call site before I go look. Half the time I am wrong, and being wrong is the useful part: it tells me exactly which assumption I brought with me.
+
+Some things I write down while doing this, because I forget them in about an hour:
+
+- What enters the file and what leaves it
+- Which functions are pure and which ones touch the outside world
+- Every place where an error is swallowed, and what would happen if it were not
+- Names that do not match what the code does
+- Anything that surprised me, which is usually the real documentation
+
+The list stays short on purpose. A page of notes I actually reread beats forty pages I never open again.
+
+### Guessing before reading
+
+Before I open a file I write one sentence predicting what is inside. Then I compare. The gap between the guess and the truth is the only reliable measurement of what I have learned, and it is much more useful than a count of files opened.
+
+> The goal is not to have read the code. The goal is to be able to predict it.
+
+I stole the idea from how I read prose. Nobody finishes a novel by speed-reading the middle third, and yet that is exactly what we do with unfamiliar code, usually under time pressure, usually with someone waiting.
+
+## A worked example, small enough to check
+
+I opened the small library that parses the frontmatter of every post on this site. It is about two hundred lines. My prediction was that most of it would be string handling, and that the risky part would be date parsing.
+
+Here is roughly what the important part does, compressed into something I can hold in my head:
+
+```ts
+function parseDate(value: unknown): string | undefined {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return value
+  }
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+  return undefined
+}
+```
+
+Two branches, one regex, no locale handling. That matches my prediction, and it also tells me where the sharp edges are: a quoted date is fine, an unquoted one silently becomes a `Date` and gets normalised to UTC, and anything else disappears without an error. I did not need to read the rest of the library to know that.
+
+The real payoff came a week later. A post kept disappearing from a list, and because I had read this function slowly once, I knew in about a minute that the date in the frontmatter was not a string. Slow reading paid for itself exactly once, which is the usual rate.
+
+## What I stopped doing
+
+I stopped opening files in the order the tree gives me, because alphabetical order has nothing to do with how the code works. I stopped reading tests last, since in most repositories they are the clearest statement of intent anyone wrote down. And I stopped pretending that skimming a large file counts as knowing it.
+
+None of this is fast. It is, however, the only method I have found where I come out the other side able to change the code instead of just describing it. I wrote about the same idea from a different angle in [notes on shipping small](/blog/notes-on-shipping-small), which is the version of this habit that happens under a deadline.
