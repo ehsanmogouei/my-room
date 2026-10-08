@@ -1,11 +1,12 @@
 import { ArrowUpRight, Star } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
 
+import { GenerativeArt } from '@/components/art/GenerativeArt'
 import type { Project } from '@/lib/content'
 import type { Dictionary } from '@/lib/dictionaries'
 import type { Locale } from '@/lib/types'
 
+/** A project card. The cover is generated from the project's slug. */
 export function ProjectCard({
   project,
   locale,
@@ -15,26 +16,23 @@ export function ProjectCard({
   locale: Locale
   dict: Dictionary
 }) {
-  const { title, year, summary, stack, cover, featured } = project.frontmatter
+  const { title, year, summary, stack, featured } = project.frontmatter
 
   return (
     <article className="card group flex flex-col overflow-hidden">
-      {cover && (
-        <Link
-          href={`/${locale}/projects/${project.slug}`}
-          className="relative aspect-[16/9] bg-surface-sunken"
-          tabIndex={-1}
-          aria-hidden="true"
-        >
-          <Image
-            src={cover}
-            alt=""
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        </Link>
-      )}
+      <Link
+        href={`/${locale}/projects/${project.slug}`}
+        className="art-frame aspect-[16/10]"
+        tabIndex={-1}
+        aria-hidden="true"
+      >
+        <GenerativeArt
+          seed={`project:${project.slug}:${locale}`}
+          width={1000}
+          height={625}
+          density="compact"
+        />
+      </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="flex items-center gap-2 text-xs text-ink-faint">

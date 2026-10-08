@@ -32,14 +32,14 @@ export const links: LinkItem[] = [
     tag: { fa: 'مرجع', en: 'Reference' },
   },
   {
-    id: 'react-three-fiber',
-    url: 'https://r3f.docs.pmnd.rs/',
-    title: { fa: 'React Three Fiber', en: 'React Three Fiber' },
+    id: 'generative-art',
+    url: 'https://en.wikipedia.org/wiki/Generative_art',
+    title: { fa: 'هنر مولد', en: 'Generative art' },
     note: {
-      fa: 'three.js به سبک React. کل این اتاق با همین ساخته شده.',
-      en: 'three.js the React way. This entire room is built with it.',
+      fa: 'ایده‌ای که کل تصویرهای این سایت رویش سوار است.',
+      en: 'The idea every picture on this site rides on.',
     },
-    tag: { fa: 'ابزار', en: 'Tool' },
+    tag: { fa: 'خواندنی', en: 'Reading' },
   },
   {
     id: 'tailwind',

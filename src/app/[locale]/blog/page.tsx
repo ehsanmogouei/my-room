@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { PostList } from '@/components/blog/PostList'
-import { PageHeader } from '@/components/ui/PageHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { getPostSummaries } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
 import { resolveLocale } from '@/lib/types'
@@ -31,16 +31,18 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
   const posts = getPostSummaries(locale)
 
   return (
-    <div className="container-page py-12">
-      <PageHeader
+    <>
+      <PageHero
+        seed={`blog:${locale}`}
         eyebrow={dict.nav.blog}
         title={dict.blog.title}
         subtitle={dict.blog.subtitle}
+        size="compact"
       />
 
-      <div className="mt-8">
+      <div className="container-page py-12">
         <PostList posts={posts} locale={locale} dict={dict} />
       </div>
-    </div>
+    </>
   )
 }

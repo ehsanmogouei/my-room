@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { PageHeader } from '@/components/ui/PageHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { ProjectCard } from '@/components/ui/ProjectCard'
 import { getProjects } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
@@ -32,22 +32,26 @@ export default async function ProjectsPage({
   const projects = getProjects(locale)
 
   return (
-    <div className="container-page py-12">
-      <PageHeader
+    <>
+      <PageHero
+        seed={`projects:${locale}`}
         eyebrow={dict.nav.projects}
         title={dict.projects.title}
         subtitle={dict.projects.subtitle}
+        size="compact"
       />
 
-      {projects.length === 0 ? (
-        <p className="py-16 text-center text-sm text-ink-muted">{dict.projects.empty}</p>
-      ) : (
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} locale={locale} dict={dict} />
-          ))}
-        </div>
-      )}
-    </div>
+      <div className="container-page py-12">
+        {projects.length === 0 ? (
+          <p className="py-16 text-center text-sm text-ink-muted">{dict.projects.empty}</p>
+        ) : (
+          <div className="grid gap-5 md:grid-cols-2">
+            {projects.map((project) => (
+              <ProjectCard key={project.slug} project={project} locale={locale} dict={dict} />
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   )
 }

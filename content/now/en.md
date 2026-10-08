@@ -3,7 +3,7 @@ updated: "2026-09-28"
 ---
 
 {/* Replace this whenever you like, and bump the `updated` date above.
-    Whatever you write here shows up on /now and behind the window in the 3D room. */}
+    Whatever you write here shows up on /now. */}
 
 ## These days
 

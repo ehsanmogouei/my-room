@@ -3,7 +3,8 @@ import type { Metadata } from 'next'
 import Image from 'next/image'
 
 import { SocialIcon } from '@/components/shell/SocialIcon'
-import { PageHeader, SectionLabel } from '@/components/ui/PageHeader'
+import { SectionLabel } from '@/components/ui/PageHeader'
+import { PageHero } from '@/components/ui/PageHero'
 import { site } from '@content/site'
 import { getDictionary } from '@/lib/dictionaries'
 import { SITE_REPO } from '@/lib/constants'
@@ -28,7 +29,7 @@ export async function generateMetadata({
 const COLOPHON = {
   fa: [
     ['فریم‌ورک', 'Next.js با App Router و رندر سمت سرور'],
-    ['اتاق سه‌بعدی', 'three.js از طریق React Three Fiber، بدون هیچ مدل آماده‌ای — همه‌چیز با کد ساخته شده'],
+    ['تصاویر', 'موتور مولد داخلی: هر تصویر از هش نام محتوای خودش ساخته می‌شود؛ هیچ فایل عکسی در مخزن نیست'],
     ['محتوا', 'فایل‌های MDX با frontmatter؛ بدون دیتابیس و بدون پنل مدیریت'],
     ['استایل', 'Tailwind CSS با توکن‌های تم که بین سایت و اتاق مشترک‌اند'],
     ['فونت', 'وزیرمتن، میزبانی‌شده روی همین دامنه'],
@@ -36,7 +37,7 @@ const COLOPHON = {
   ],
   en: [
     ['Framework', 'Next.js App Router with server rendering'],
-    ['The 3D room', 'three.js through React Three Fiber, with no imported models — every object is code'],
+    ['Imagery', 'A generative engine: every picture is drawn from a hash of its own content, and no image file exists in the repo'],
     ['Content', 'MDX files with frontmatter; no database and no admin panel'],
     ['Styling', 'Tailwind CSS with theme tokens shared between the site and the room'],
     ['Typography', 'Vazirmatn, self-hosted from this same domain'],
@@ -51,21 +52,24 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
   const httpSocials = site.socials.filter((social) => social.href.startsWith('http'))
 
   return (
-    <div className="container-page py-12">
-      <PageHeader
+    <>
+      <PageHero
+        seed={`about:${locale}`}
         eyebrow={dict.nav.about}
         title={dict.about.title}
         subtitle={dict.about.subtitle}
+        size="compact"
       />
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_18rem]">
+      <div className="container-page py-12">
+        <div className="grid gap-10 lg:grid-cols-[1fr_18rem]">
         <div className="max-w-2xl space-y-5 text-base leading-8 text-ink-muted">
           <p className="text-lg text-ink">{site.bio[locale]}</p>
 
           <p>
             {locale === 'fa'
-              ? 'این سایت یک پورتفولیوی معمولی نیست؛ یک مکان است. هر بخشش یک شیء در اتاق دارد و اگر مرورگرت سه‌بعدی را پشتیبانی نکند، همان محتوا با یک نقشه‌ی ساده در دسترست است. هیچ‌چیز پشت WebGL قفل نشده.'
-              : 'This site is not a portfolio with a grid of cards; it is a place. Every section has an object in the room, and if your browser cannot do three dimensions, the same content is available as a flat map. Nothing is locked behind WebGL.'}
+              ? 'این سایت یک پورتفولیوی معمولی نیست: یک آثارخانه‌ی مولد است. هر نوشته، هر پروژه و هر قاب، تصویر مخصوص خودش را دارد که با کد ساخته می‌شود — نه یک عکس تکراری، و نه یک فایل تصویری در مخزن.'
+              : 'This site is not a portfolio with a grid of cards; it is a generative collection. Every post, project and frame carries its own picture, drawn by code rather than stored as a file.'}
           </p>
 
           <p>
@@ -143,7 +147,8 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
             {dict.footer.source}
           </a>
         </p>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   )
 }

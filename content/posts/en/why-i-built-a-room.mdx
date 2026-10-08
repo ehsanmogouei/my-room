@@ -3,7 +3,6 @@ title: "Why I built a room instead of another portfolio"
 date: "2026-03-14"
 summary: "I have made four portfolio sites and abandoned all of them. This one is a room you can walk into, and it is the first one I actually want to keep."
 tags: ["meta", "nextjs", "three-js", "design"]
-cover: "/gallery/placeholder-01.jpg"
 draft: false
 ---
 
@@ -38,7 +37,7 @@ If a marker in the 3D scene points at something that does not exist, the build f
 
 ### The room is decoration, not the product
 
-The three-dimensional scene loads after the text does, and if `prefers-reduced-motion` is set, you get a flat illustrated map of the same room with the same links in the same places. Nothing is reachable only by walking. I love the 3D room, but I am not going to hold my writing hostage behind a WebGL context.
+The generated artwork is inline SVG rendered on the server, so it never blocks the text and stays sharp at any size. If JavaScript never runs, everything is still there. I like the idea of a site that is a place, but I am not going to hold my writing hostage behind a canvas.
 
 ### Markers are just data
 

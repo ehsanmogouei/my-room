@@ -75,6 +75,6 @@ function pageSubtitle(key: (typeof NAV_ITEMS)[number]['key'], dict: Dictionary):
     case 'about':
       return dict.about.subtitle
     default:
-      return dict.home.enterHint
+      return dict.hero.cue
   }
 }

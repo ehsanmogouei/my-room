@@ -108,8 +108,12 @@ export type GalleryKind = 'image' | 'video' | 'link'
 export interface GalleryItem {
   id: string
   kind: GalleryKind
-  /** For `image`/`video`: path under /public. For `link`: the URL. */
-  src: string
+  /**
+   * Required for `video` and `link` (the file path or the URL).
+   * For `image`, omit it and a unique picture is generated from `id` —
+   * which is the default, because the whole site's imagery is procedural.
+   */
+  src?: string
   /** Poster image for videos, or preview for links. */
   poster?: string
   title: Localized
@@ -129,25 +133,8 @@ export interface LinkItem {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Room                                                                       */
+/* Sections                                                                   */
 /* -------------------------------------------------------------------------- */
 
-/** Every interactive object in the room maps to one of these. */
-export type HotspotId =
-  | 'desk'
-  | 'bookshelf'
-  | 'galleryWall'
-  | 'window'
-  | 'corkboard'
-  | 'door'
-  | 'lamp'
-
-export interface Hotspot {
-  id: HotspotId
-  /** Route inside the current locale, e.g. `/projects`. */
-  href: string
-  /** World position of the floating marker. */
-  position: [number, number, number]
-  /** Accent colour used for the marker glow. */
-  color: string
-}
+/** The four content sections that get a card on the home page. */
+export type SectionKey = 'work' | 'writing' | 'frames' | 'now'

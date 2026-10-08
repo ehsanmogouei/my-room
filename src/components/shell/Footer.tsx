@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { GenerativeArt } from '@/components/art/GenerativeArt'
 import { SocialIcon } from '@/components/shell/SocialIcon'
 import type { Dictionary } from '@/lib/dictionaries'
 import { SITE_REPO } from '@/lib/constants'
@@ -11,6 +12,17 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
 
   return (
     <footer className="mt-24 border-t border-subtle bg-surface-sunken/60">
+      {/* A generated signature band. It belongs to the language, not the page,
+          so it stays put while you navigate — like a letterhead. */}
+      <div className="art-frame h-16 w-full sm:h-20" aria-hidden="true">
+        <GenerativeArt
+          seed={`signature:${locale}`}
+          width={1800}
+          height={140}
+          density="compact"
+        />
+      </div>
+
       <div className="container-page grid gap-8 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="max-w-sm">
           <p className="font-bold text-ink">{site.name[locale]}</p>

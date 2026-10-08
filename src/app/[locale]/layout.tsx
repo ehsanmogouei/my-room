@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from 'next'
 import { notFound } from 'next/navigation'
 
 import { CommandPalette } from '@/components/CommandPalette'
+import { CursorLight } from '@/components/art/CursorLight'
+import { GrainDefs } from '@/components/art/GenerativeArt'
+import { PageField } from '@/components/art/PageField'
 import { Footer } from '@/components/shell/Footer'
 import { Header } from '@/components/shell/Header'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -63,7 +66,11 @@ export async function generateMetadata({
       alternateLocale: locale === 'fa' ? ['en_US'] : ['fa_IR'],
       images: [
         {
-          url: absoluteUrl(`/${locale}/og?title=${encodeURIComponent(site.name[locale])}`),
+          url: absoluteUrl(
+            `/${locale}/og?title=${encodeURIComponent(site.name[locale])}&seed=${encodeURIComponent(
+              `home:${locale}`,
+            )}`,
+          ),
           width: 1200,
           height: 630,
           alt: title,
@@ -75,7 +82,13 @@ export async function generateMetadata({
       title,
       description,
       creator: site.seo.twitter,
-      images: [absoluteUrl(`/${locale}/og?title=${encodeURIComponent(site.name[locale])}`)],
+      images: [
+        absoluteUrl(
+          `/${locale}/og?title=${encodeURIComponent(site.name[locale])}&seed=${encodeURIComponent(
+            `home:${locale}`,
+          )}`,
+        ),
+      ],
     },
     icons: {
       icon: [
@@ -181,7 +194,13 @@ export default async function LocaleLayout({
         </a>
 
         <ThemeProvider>
-          <div className="flex min-h-dvh flex-col">
+          {/* Fixed, generated, and behind everything. They sit at negative
+              z-index, which is why <html> carries the surface colour. */}
+          <PageField seed={`field:${locale}`} />
+          <CursorLight />
+          <GrainDefs />
+
+          <div className="relative flex min-h-dvh flex-col">
             <Header locale={locale} dict={dict} siteName={site.name[locale]} />
 
             <main id="content" className="flex-1">

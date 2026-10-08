@@ -2,13 +2,6 @@
 
 import { useCallback, useSyncExternalStore } from 'react'
 
-export interface WebGLSupport {
-  /** True when a WebGL context could be created. */
-  supported: boolean
-  /** False until the probe has run on the client. */
-  checked: boolean
-}
-
 /** A store that never changes: used with `useSyncExternalStore` for reads. */
 const neverChanges = () => () => {}
 
@@ -56,49 +49,15 @@ export function usePrefersReducedMotion(): boolean {
 }
 
 /* -------------------------------------------------------------------------- */
-/* WebGL capability                                                           */
-/* -------------------------------------------------------------------------- */
-
-// Probing creates a GPU context, so the answer is cached for the page lifetime.
-let webglProbe: boolean | null = null
-
-function probeWebGL(): boolean {
-  if (webglProbe !== null) return webglProbe
-
-  try {
-    const canvas = document.createElement('canvas')
-    const context =
-      canvas.getContext('webgl2') ??
-      canvas.getContext('webgl') ??
-      canvas.getContext('experimental-webgl')
-
-    webglProbe = Boolean(context)
-
-    // Release the probe context immediately; browsers cap how many can exist.
-    if (context && 'getExtension' in context) {
-      ;(context as WebGLRenderingContext).getExtension('WEBGL_lose_context')?.loseContext()
-    }
-  } catch {
-    webglProbe = false
-  }
-
-  return webglProbe
-}
-
-export function useWebGLSupport(): WebGLSupport {
-  const mounted = useMounted()
-  const supported = useSyncExternalStore(neverChanges, probeWebGL, () => false)
-
-  return { supported, checked: mounted }
-}
-
-/* -------------------------------------------------------------------------- */
 /* Device capability                                                          */
 /* -------------------------------------------------------------------------- */
 
 let lowPowerProbe: boolean | null = null
 
-/** Rough guess at whether shadows and high particle counts are affordable. */
+/**
+ * Rough guess at whether the animated canvas can afford a high frame rate.
+ * The hero reads this to lower its own quality rather than dropping frames.
+ */
 export function getLowPowerDevice(): boolean {
   if (lowPowerProbe !== null) return lowPowerProbe
 

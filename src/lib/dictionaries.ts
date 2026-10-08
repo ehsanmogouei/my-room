@@ -40,43 +40,28 @@ export interface Dictionary {
     theme: string
     themeDay: string
     themeNight: string
+    scroll: string
   }
+  hero: {
+    /** Small line above the title. */
+    eyebrow: string
+    /** Scroll invitation under the fold. */
+    cue: string
+    stats: { posts: string; projects: string; frames: string }
+  }
+  sections: {
+    work: { label: string; description: string }
+    writing: { label: string; description: string }
+    frames: { label: string; description: string }
+    now: { label: string; description: string }
+  }
+  corkboard: { label: string; description: string }
   home: {
-    enterRoom: string
-    enterHint: string
     orBrowse: string
     latestWriting: string
     selectedWork: string
     nowHeading: string
     viewAll: string
-  }
-  room: {
-    loading: string
-    title: string
-    intro: string
-    /** Shown before the visitor clicks "enter". */
-    doorLabel: string
-    doorHint: string
-    /** On-screen control legend. */
-    controls: string
-    move: string
-    look: string
-    interact: string
-    release: string
-    clickToStart: string
-    use2D: string
-    use3D: string
-    mode3d: string
-    mode2d: string
-    unsupported: string
-    unsupportedHint: string
-    audioOn: string
-    audioOff: string
-    /** Map of hotspot id → label shown on the marker. */
-    hotspots: Record<
-      'desk' | 'bookshelf' | 'galleryWall' | 'window' | 'corkboard' | 'door' | 'lamp',
-      { label: string; description: string }
-    >
   }
   blog: {
     title: string
@@ -132,6 +117,8 @@ export interface Dictionary {
     source: string
     rights: string
     rss: string
+    /** Shown next to the generated signature mark. */
+    signature: string
   }
   notFound: {
     title: string
@@ -152,7 +139,7 @@ const fa: Dictionary = {
     readMore: 'ادامه بده',
     readingTime: 'زمان مطالعه',
     minutes: 'دقیقه',
-    backHome: 'بازگشت به اتاق',
+    backHome: 'بازگشت به خانه',
     backTo: 'بازگشت به',
     allTags: 'همه',
     tags: 'برچسب‌ها',
@@ -174,45 +161,29 @@ const fa: Dictionary = {
     theme: 'تم',
     themeDay: 'روز',
     themeNight: 'شب',
+    scroll: 'اسکرول کن',
+  },
+  hero: {
+    eyebrow: 'اتاق من',
+    cue: 'کمی پایین‌تر',
+    stats: { posts: 'نوشته', projects: 'کار', frames: 'قاب' },
+  },
+  sections: {
+    work: { label: 'کارها', description: 'چیزهایی که ساخته‌ام و به‌شان افتخار می‌کنم' },
+    writing: { label: 'نوشته‌ها', description: 'یادداشت‌ها، ایده‌ها و چیزهایی که یاد می‌گیرم' },
+    frames: { label: 'قاب‌ها', description: 'عکس‌ها، ویدیوها و چیزهایی که جمع کرده‌ام' },
+    now: { label: 'الان', description: 'روی چه چیزی کار می‌کنم و چه می‌خوانم' },
+  },
+  corkboard: {
+    label: 'تخته‌ی سنجاقی',
+    description: 'لینک‌هایی که ارزش نگه‌داشتن دارند.',
   },
   home: {
-    enterRoom: 'وارد اتاق شو',
-    enterHint: 'با کلیدهای W A S D راه برو، با ماوس نگاه کن، روی اشیا کلیک کن.',
     orBrowse: 'یا مستقیم برو سراغ',
     latestWriting: 'تازه‌ترین نوشته‌ها',
     selectedWork: 'کارهای انتخابی',
     nowHeading: 'این روزها',
     viewAll: 'دیدن همه',
-  },
-  room: {
-    loading: 'داریم اتاق را روشن می‌کنیم…',
-    title: 'اتاق',
-    intro: 'در باز است. داخل شو.',
-    doorLabel: 'در را باز کن',
-    doorHint: 'برای ورود کلیک کن یا کلیدی بزن',
-    controls: 'راهنما',
-    move: 'حرکت',
-    look: 'نگاه',
-    interact: 'انتخاب',
-    release: 'آزاد کردن ماوس',
-    clickToStart: 'برای شروع کلیک کن',
-    use2D: 'حالت ساده',
-    use3D: 'حالت سه‌بعدی',
-    mode3d: 'سه‌بعدی',
-    mode2d: 'دوبعدی',
-    unsupported: 'مرورگرت از حالت سه‌بعدی پشتیبانی نمی‌کند',
-    unsupportedHint: 'نسخه‌ی ساده‌ی اتاق را برایت آوردیم. همه‌چیز همین‌جاست.',
-    audioOn: 'صدای محیط روشن',
-    audioOff: 'صدای محیط خاموش',
-    hotspots: {
-      desk: { label: 'میز کار', description: 'کارها و پروژه‌ها' },
-      bookshelf: { label: 'قفسه‌ی کتاب', description: 'نوشته‌ها و یادداشت‌ها' },
-      galleryWall: { label: 'دیوار قاب‌ها', description: 'عکس‌ها و آرشیو' },
-      window: { label: 'پنجره', description: 'الان چه خبر' },
-      corkboard: { label: 'تخته‌ی سنجاقی', description: 'لینک‌های ذخیره‌شده' },
-      door: { label: 'در', description: 'راه‌های ارتباطی' },
-      lamp: { label: 'چراغ', description: 'روز یا شب' },
-    },
   },
   blog: {
     title: 'نوشته‌ها',
@@ -243,7 +214,7 @@ const fa: Dictionary = {
   },
   about: {
     title: 'درباره',
-    subtitle: 'کمی درباره من و این اتاق.',
+    subtitle: 'کمی درباره من و این سایت.',
     elsewhere: 'جای دیگر',
     getInTouch: 'تماس',
     colophon: 'درباره‌ی ساخت این سایت',
@@ -264,20 +235,21 @@ const fa: Dictionary = {
     hintClose: 'بستن',
   },
   footer: {
-    builtWith: 'ساخته‌شده با Next.js و سه‌بعدی‌های کنجکاوانه',
+    builtWith: 'ساخته‌شده با Next.js؛ هر تصویر این سایت با کد تولید می‌شود',
     source: 'کد منبع',
     rights: 'همه‌ی حقوق محفوظ است.',
     rss: 'خوراک RSS',
+    signature: 'امضای این صفحه',
   },
   notFound: {
-    title: 'این در به جایی باز نمی‌شود',
-    body: 'صفحه‌ای که دنبالش بودی اینجا نیست. برگرد داخل اتاق.',
+    title: 'این صفحه پیدا نشد',
+    body: 'نشانی‌ای که دنبالش بودی اینجا نیست. برگرد به خانه.',
   },
 }
 
 const en: Dictionary = {
   nav: {
-    home: 'Room',
+    home: 'Home',
     projects: 'Work',
     blog: 'Writing',
     gallery: 'Frames',
@@ -288,7 +260,7 @@ const en: Dictionary = {
     readMore: 'Read more',
     readingTime: 'Reading time',
     minutes: 'min',
-    backHome: 'Back to the room',
+    backHome: 'Back home',
     backTo: 'Back to',
     allTags: 'All',
     tags: 'Tags',
@@ -310,45 +282,29 @@ const en: Dictionary = {
     theme: 'Theme',
     themeDay: 'Day',
     themeNight: 'Night',
+    scroll: 'Scroll',
+  },
+  hero: {
+    eyebrow: 'A personal site',
+    cue: 'Keep going',
+    stats: { posts: 'posts', projects: 'projects', frames: 'frames' },
+  },
+  sections: {
+    work: { label: 'Work', description: 'Things I have built and am proud of' },
+    writing: { label: 'Writing', description: 'Notes, ideas and things I am learning' },
+    frames: { label: 'Frames', description: 'Photos, videos and things I have collected' },
+    now: { label: 'Now', description: 'What I am working on and reading' },
+  },
+  corkboard: {
+    label: 'The corkboard',
+    description: 'Links worth keeping.',
   },
   home: {
-    enterRoom: 'Enter the room',
-    enterHint: 'Walk with W A S D, look with the mouse, click the objects.',
     orBrowse: 'Or go straight to',
     latestWriting: 'Latest writing',
     selectedWork: 'Selected work',
     nowHeading: 'Right now',
     viewAll: 'View all',
-  },
-  room: {
-    loading: 'Warming up the room…',
-    title: 'The room',
-    intro: 'The door is open. Come in.',
-    doorLabel: 'Open the door',
-    doorHint: 'Click or press any key to enter',
-    controls: 'Controls',
-    move: 'Move',
-    look: 'Look',
-    interact: 'Select',
-    release: 'Release cursor',
-    clickToStart: 'Click to start',
-    use2D: 'Simple mode',
-    use3D: '3D mode',
-    mode3d: '3D',
-    mode2d: '2D',
-    unsupported: 'Your browser cannot run the 3D room',
-    unsupportedHint: 'Here is the simple version instead. Everything is still here.',
-    audioOn: 'Ambience on',
-    audioOff: 'Ambience off',
-    hotspots: {
-      desk: { label: 'Desk', description: 'Work and projects' },
-      bookshelf: { label: 'Bookshelf', description: 'Writing and notes' },
-      galleryWall: { label: 'Gallery wall', description: 'Photos and archive' },
-      window: { label: 'Window', description: 'What is going on' },
-      corkboard: { label: 'Corkboard', description: 'Saved links' },
-      door: { label: 'Door', description: 'Ways to reach me' },
-      lamp: { label: 'Lamp', description: 'Day or night' },
-    },
   },
   blog: {
     title: 'Writing',
@@ -379,7 +335,7 @@ const en: Dictionary = {
   },
   about: {
     title: 'About',
-    subtitle: 'A little about me and this room.',
+    subtitle: 'A little about me and this site.',
     elsewhere: 'Elsewhere',
     getInTouch: 'Get in touch',
     colophon: 'Colophon',
@@ -400,14 +356,15 @@ const en: Dictionary = {
     hintClose: 'close',
   },
   footer: {
-    builtWith: 'Built with Next.js and a curious amount of 3D',
+    builtWith: 'Built with Next.js; every image on this site is generated by code',
     source: 'Source',
     rights: 'All rights reserved.',
     rss: 'RSS feed',
+    signature: "This page's signature",
   },
   notFound: {
-    title: 'This door leads nowhere',
-    body: 'The page you were looking for is not here. Step back into the room.',
+    title: 'This page does not exist',
+    body: 'The address you were looking for is not here. Head back home.',
   },
 }
 

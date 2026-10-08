@@ -4,6 +4,7 @@ import path from 'node:path'
 import { ImageResponse } from 'next/og'
 
 import { site } from '@content/site'
+import { createArtwork } from '@/lib/generative/artwork'
 import { localeMeta, resolveLocale } from '@/lib/types'
 
 export const runtime = 'nodejs'
@@ -32,12 +33,6 @@ function loadFonts() {
   return fontCache
 }
 
-const TONES = {
-  post: { accent: '#e0a35c', glow: 'rgba(224,163,92,0.22)' },
-  project: { accent: '#8fb0a0', glow: 'rgba(143,176,160,0.2)' },
-  page: { accent: '#c98a6b', glow: 'rgba(201,138,107,0.2)' },
-} as const
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ locale: string }> },
@@ -46,8 +41,6 @@ export async function GET(
   const meta = localeMeta[locale]
 
   const { searchParams } = new URL(request.url)
-  const kind = (searchParams.get('kind') ?? 'page') as keyof typeof TONES
-  const tone = TONES[kind] ?? TONES.page
 
   const isRtl = meta.dir === 'rtl'
 
@@ -61,6 +54,21 @@ export async function GET(
 
   const title = normalize(searchParams.get('title') || site.name[locale])
   const subtitle = normalize(searchParams.get('subtitle') || site.tagline[locale])
+
+  /*
+   * The same seed the page uses, so the social card is built from the same
+   * palette and light source as the artwork behind the article. Satori cannot
+   * render the SVG (no filters, no blend modes), so the composition is
+   * approximated with gradients — but the colour is exact.
+   */
+  const art = createArtwork(searchParams.get('seed') || title, {
+    width: 1200,
+    height: 630,
+    density: 'rich',
+  })
+
+  const orbX = 74
+  const orbY = 24
 
   const { regular, bold } = await loadFonts()
 
@@ -80,11 +88,41 @@ export async function GET(
           justifyContent: 'space-between',
           alignItems,
           padding: 72,
-          backgroundColor: '#0d1017',
-          backgroundImage: `radial-gradient(circle at 78% 22%, ${tone.glow}, transparent 58%), radial-gradient(circle at 12% 88%, rgba(65,82,127,0.28), transparent 55%)`,
+          backgroundColor: art.background.from,
+          backgroundImage: [
+            `radial-gradient(circle at ${orbX}% ${orbY}%, ${art.palette.glow}, transparent 46%)`,
+            `radial-gradient(circle at 12% 92%, ${art.palette.ink[1]}, transparent 52%)`,
+            `linear-gradient(140deg, ${art.background.from} 0%, ${art.background.to} 100%)`,
+          ].join(', '),
           fontFamily: 'Vazirmatn',
         }}
       >
+        {/* Ink ribbons, approximated with rotated gradient bars */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 330,
+            left: -60,
+            width: 1400,
+            height: 2,
+            background: `linear-gradient(90deg, transparent, ${art.palette.ink[0]}, transparent)`,
+            opacity: 0.55,
+            transform: 'rotate(-4deg)',
+          }}
+        />
+        <div
+          style={{
+            position: 'absolute',
+            top: 430,
+            left: -60,
+            width: 1400,
+            height: 1,
+            background: `linear-gradient(90deg, transparent, ${art.palette.ink[2]}, transparent)`,
+            opacity: 0.5,
+            transform: 'rotate(3deg)',
+          }}
+        />
+
         {/* Header: the room mark, drawn inline so it needs no asset */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div
@@ -92,16 +130,18 @@ export async function GET(
               width: 46,
               height: 46,
               borderRadius: 14,
-              border: `2px solid ${tone.accent}`,
+              border: `2px solid ${art.palette.glow}`,
               display: 'flex',
               alignItems: 'flex-end',
               justifyContent: 'center',
               paddingBottom: 8,
             }}
           >
-            <div style={{ width: 16, height: 20, backgroundColor: tone.accent, borderRadius: 3 }} />
+            <div
+              style={{ width: 16, height: 20, backgroundColor: art.palette.glow, borderRadius: 3 }}
+            />
           </div>
-          <div style={{ color: '#9aa4b6', fontSize: 26 }}>
+          <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: 26 }}>
             {site.name[locale]}
           </div>
         </div>
@@ -110,7 +150,7 @@ export async function GET(
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20, alignItems }}>
           <div
             style={{
-              color: '#f2ede4',
+              color: '#f7f3ec',
               fontSize: title.length > 60 ? 56 : 68,
               fontWeight: 700,
               lineHeight: 1.4,
@@ -125,7 +165,7 @@ export async function GET(
           {subtitle && (
             <div
               style={{
-                color: '#9aa4b6',
+                color: 'rgba(255,255,255,0.66)',
                 fontSize: 30,
                 lineHeight: 1.65,
                 maxWidth: 900,
@@ -145,17 +185,19 @@ export async function GET(
             alignItems: 'center',
             justifyContent: 'space-between',
             alignSelf: 'stretch',
-            borderTop: '1px solid rgba(255,255,255,0.09)',
+            borderTop: '1px solid rgba(255,255,255,0.14)',
             paddingTop: 26,
-            color: '#6a748a',
+            color: 'rgba(255,255,255,0.5)',
             fontSize: 24,
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 34, height: 4, backgroundColor: tone.accent, borderRadius: 2 }} />
+            <div
+              style={{ width: 34, height: 4, backgroundColor: art.palette.glow, borderRadius: 2 }}
+            />
             <div>{site.handle}</div>
           </div>
-          <div>{isRtl ? 'این اتاق باز است' : 'The door is open'}</div>
+          <div>{isRtl ? 'هر تصویر این سایت با کد ساخته می‌شود' : 'Every image here is generated'}</div>
         </div>
       </div>
     ),

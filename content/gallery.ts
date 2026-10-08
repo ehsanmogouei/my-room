@@ -3,27 +3,31 @@ import type { GalleryItem } from '@/lib/types'
 /* ==========================================================================
  *  🖼️  THE GALLERY WALL
  *
- *  Every item here becomes a frame on the wall — and a card on /gallery.
+ *  There are no image files in this project. Every frame is generated from
+ *  the item's `id`, so each one is unique, weighless, and never needs
+ *  re-exporting at a new size.
  *
  *  HOW TO ADD YOUR OWN
- *  1. Drop the file in `public/gallery/` (jpg, png, webp, avif, mp4, webm).
- *  2. Copy one block below and change `id`, `src`, `title`, `group`.
- *  3. Keep `id` unique — it is the React key and the lightbox anchor.
+ *  Copy a block below and change `id`, `title`, `group` and `date`.
+ *  Keep `id` unique — it is both the React key and the artwork seed.
+ *
+ *  WANT A REAL PHOTOGRAPH?
+ *  1. Drop the file in `public/gallery/`.
+ *  2. Add `src: '/gallery/your-photo.jpg'` to the item.
+ *  A `src` always wins over the generated artwork.
  *
  *  `kind` can be:
- *    'image' — a photo, shown in the lightbox
- *    'video' — an mp4/webm; `poster` is the still frame shown first
- *    'link'  — an external page; `src` is the URL and `poster` is a preview
+ *    'image' — generated art, or your photo when `src` is set
+ *    'video' — an mp4/webm; `src` is required, `poster` is the still frame
+ *    'link'  — an external page; `src` is the URL
  *
  *  `title`, `caption` and `group` are `{ fa, en }` pairs.
- *  Leave `caption` out if you have nothing to say.
  * ========================================================================== */
 
 export const gallery: GalleryItem[] = [
   {
     id: 'desk-at-night',
     kind: 'image',
-    src: '/gallery/placeholder-01.jpg',
     title: { fa: 'میز کار، نیمه‌شب', en: 'The desk, after midnight' },
     caption: {
       fa: 'بیشتر کارهای خوب از همین‌جا بیرون آمده‌اند.',
@@ -35,7 +39,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'first-light',
     kind: 'image',
-    src: '/gallery/placeholder-02.jpg',
     title: { fa: 'اولین نور', en: 'First light' },
     caption: {
       fa: 'پنجره‌ای که هر روز صبح ساعت هفت بیدارم می‌کند.',
@@ -47,7 +50,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'prototype-table',
     kind: 'image',
-    src: '/gallery/placeholder-03.jpg',
     title: { fa: 'میز نمونه‌سازی', en: 'Prototype table' },
     caption: {
       fa: 'سه نسخه‌ی شکست‌خورده و یکی که جواب داد.',
@@ -59,7 +61,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'colour-study',
     kind: 'image',
-    src: '/gallery/placeholder-04.jpg',
     title: { fa: 'تمرین رنگ', en: 'Colour study' },
     caption: {
       fa: 'پالت‌هایی که هرگز از پروژه‌شان جان سالم به در نمی‌برند.',
@@ -71,7 +72,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'road-north',
     kind: 'image',
-    src: '/gallery/placeholder-05.jpg',
     title: { fa: 'جاده‌ی شمال', en: 'The road north' },
     caption: {
       fa: 'چهار ساعت رانندگی برای رسیدن به جایی که آنتن نمی‌داد.',
@@ -83,7 +83,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'rain-window',
     kind: 'image',
-    src: '/gallery/placeholder-06.jpg',
     title: { fa: 'باران روی شیشه', en: 'Rain on glass' },
     caption: {
       fa: 'بهترین هوای ممکن برای نوشتن کد.',
@@ -95,7 +94,6 @@ export const gallery: GalleryItem[] = [
   {
     id: 'cable-drawer',
     kind: 'image',
-    src: '/gallery/placeholder-07.jpg',
     title: { fa: 'کشوی کابل‌ها', en: 'The cable drawer' },
     caption: {
       fa: 'هر کابلی که لازم داشته باشی، جز همان یکی که الان می‌خواهی.',
@@ -107,11 +105,10 @@ export const gallery: GalleryItem[] = [
   {
     id: 'wall-of-frames',
     kind: 'image',
-    src: '/gallery/placeholder-08.jpg',
     title: { fa: 'دیوار قاب‌ها', en: 'The wall of frames' },
     caption: {
-      fa: 'همان دیواری که توی اتاق سه‌بعدی می‌بینی.',
-      en: 'The very wall you can walk up to inside the 3D room.',
+      fa: 'هر قاب این دیوار با کد ساخته شده، نه با دوربین.',
+      en: 'Every frame on this wall was made with code, not a camera.',
     },
     group: { fa: 'تصادفی', en: 'Odd bits' },
     date: '2025-01-09',
@@ -120,7 +117,6 @@ export const gallery: GalleryItem[] = [
     id: 'link-mdx',
     kind: 'link',
     src: 'https://mdxjs.com/',
-    poster: '/gallery/placeholder-02.jpg',
     title: { fa: 'MDX', en: 'MDX' },
     caption: {
       fa: 'چیزی که این سایت با آن نوشته می‌شود.',
@@ -132,12 +128,11 @@ export const gallery: GalleryItem[] = [
   {
     id: 'link-threejs',
     kind: 'link',
-    src: 'https://threejs.org/',
-    poster: '/gallery/placeholder-04.jpg',
-    title: { fa: 'three.js', en: 'three.js' },
+    src: 'https://shiki.style/',
+    title: { fa: 'Shiki', en: 'Shiki' },
     caption: {
-      fa: 'موتوری که اتاق سه‌بعدی رویش سوار است.',
-      en: 'The engine the 3D room rides on.',
+      fa: 'هایلایت کد بدون جاوااسکریپت سمت کلاینت.',
+      en: 'Syntax highlighting with no client-side JavaScript.',
     },
     group: { fa: 'کار', en: 'Work' },
     date: '2024-11-15',

@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 /**
  * Security headers applied to every response.
- * Kept permissive enough for the WebGL room and inline theme bootstrap script.
+ * Kept permissive enough for inline SVG artwork and the theme bootstrap script.
  */
 const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
   },
 
   experimental: {
-    optimizePackageImports: ['lucide-react', '@react-three/drei'],
+    optimizePackageImports: ['lucide-react'],
   },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]

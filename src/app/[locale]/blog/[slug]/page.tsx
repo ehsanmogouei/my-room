@@ -1,11 +1,11 @@
 import { Clock, Languages } from 'lucide-react'
 import type { Metadata } from 'next'
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { TableOfContents } from '@/components/blog/TableOfContents'
 import { MdxContent } from '@/components/mdx/MdxContent'
+import { PageHero } from '@/components/ui/PageHero'
 import { PostCard } from '@/components/ui/PostCard'
 import { site } from '@content/site'
 import { getPost, getPostSlugs, getPosts, getRelatedPosts, toPostSummary } from '@/lib/content'
@@ -35,7 +35,7 @@ export async function generateMetadata({
   const ogImage = absoluteUrl(
     `/${locale}/og?title=${encodeURIComponent(title)}&subtitle=${encodeURIComponent(
       truncate(summary, 90),
-    )}&kind=post`,
+    )}&seed=${encodeURIComponent(`post:${slug}:${locale}`)}`,
   )
 
   // Link the translation only when it actually exists.
@@ -86,7 +86,7 @@ export default async function PostPage({
   if (!post) notFound()
 
   const dict = getDictionary(locale)
-  const { title, date, summary, tags, cover } = post.frontmatter
+  const { title, date, summary, tags } = post.frontmatter
 
   const toc = extractToc(post.body)
   const related = getRelatedPosts(locale, slug, 3)
@@ -108,30 +108,28 @@ export default async function PostPage({
     datePublished: toIsoDate(date),
     inLanguage: localeMeta[locale].htmlLang,
     url: absoluteUrl(`/${locale}/blog/${slug}`),
-    ...(cover ? { image: absoluteUrl(cover) } : {}),
+    // Only set when the author supplied a real photograph; otherwise the
+    // generated Open Graph card is already referenced by the metadata above.
+    ...(post.frontmatter.cover ? { image: absoluteUrl(post.frontmatter.cover) } : {}),
     author: { '@type': 'Person', name: site.name[locale], url: absoluteUrl(`/${locale}`) },
     keywords: (tags ?? []).join(', '),
   }
 
   return (
-    <article className="container-page py-12">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
       />
 
-      <nav className="mb-6 text-xs text-ink-faint" aria-label={dict.common.backTo}>
-        <Link href={`/${locale}/blog`} className="hover:text-accent">
-          {dict.nav.blog}
-        </Link>
-        <span className="mx-2" aria-hidden="true">
-          /
-        </span>
-        <span className="text-ink-muted">{title}</span>
-      </nav>
-
-      <header className="max-w-3xl">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
+      <PageHero
+        // Same seed as the card on the index, so the artwork carries across.
+        seed={`post:${slug}:${locale}`}
+        eyebrow={dict.nav.blog}
+        title={title}
+        subtitle={summary}
+      >
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-ink-muted">
           <time dateTime={toIsoDate(date)}>{formatDate(date, locale)}</time>
           <span aria-hidden="true">·</span>
           <span className="inline-flex items-center gap-1">
@@ -144,42 +142,23 @@ export default async function PostPage({
             <Link
               href={`/${otherLocale}/blog/${slug}`}
               hrefLang={localeMeta[otherLocale].htmlLang}
-              className="inline-flex items-center gap-1 rounded-full border border-subtle px-2 py-0.5 font-semibold transition-colors hover:border-accent hover:text-accent"
+              className="inline-flex items-center gap-1 rounded-full border border-subtle bg-surface-raised/70 px-2 py-0.5 font-semibold backdrop-blur transition-colors hover:border-accent hover:text-accent"
             >
               <Languages className="size-3" aria-hidden="true" />
               {localeMeta[otherLocale].label}
             </Link>
           )}
+
+          {tags?.map((tag) => (
+            <span key={tag} className="chip">
+              {tag}
+            </span>
+          ))}
         </div>
+      </PageHero>
 
-        <h1 className="mt-4 text-3xl font-bold text-ink sm:text-4xl">{title}</h1>
-        <p className="mt-4 text-base leading-relaxed text-ink-muted">{summary}</p>
-
-        {tags && tags.length > 0 && (
-          <ul className="mt-5 flex flex-wrap gap-1.5">
-            {tags.map((tag) => (
-              <li key={tag} className="chip">
-                {tag}
-              </li>
-            ))}
-          </ul>
-        )}
-      </header>
-
-      {cover && (
-        <div className="relative mt-8 aspect-[16/7] overflow-hidden rounded-2xl border border-subtle">
-          <Image
-            src={cover}
-            alt=""
-            fill
-            sizes="(max-width: 1024px) 100vw, 900px"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
-
-      <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
+      <article className="container-page py-12">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="min-w-0 max-w-3xl">
           <MdxContent source={post.body} locale={locale} />
         </div>
@@ -242,6 +221,7 @@ export default async function PostPage({
           </div>
         </section>
       )}
-    </article>
+      </article>
+    </>
   )
 }
