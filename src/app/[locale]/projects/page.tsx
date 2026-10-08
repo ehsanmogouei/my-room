@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { ProjectCard } from '@/components/ui/ProjectCard'
 import { getProjects } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
@@ -41,7 +41,7 @@ export default async function ProjectsPage({
         size="compact"
       />
 
-      <div className="container-page py-12">
+      <div className="wrap band">
         {projects.length === 0 ? (
           <p className="py-16 text-center text-sm text-ink-muted">{dict.projects.empty}</p>
         ) : (

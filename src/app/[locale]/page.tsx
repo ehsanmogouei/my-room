@@ -1,11 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { GenerativeArt } from '@/components/art/GenerativeArt'
-import { LivingCanvas } from '@/components/art/LivingCanvas'
-import { PostCard } from '@/components/ui/PostCard'
+import { SplitText } from '@/components/chrome/SplitText'
 import { ProjectCard } from '@/components/ui/ProjectCard'
-import { SectionLabel } from '@/components/ui/PageHeader'
 import { site } from '@content/site'
 import { getGallery, getPostSummaries, getProjects } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
@@ -25,12 +22,36 @@ export async function generateMetadata({
   }
 }
 
-const SECTION_LINKS: Array<{ key: SectionKey; path: string }> = [
-  { key: 'work', path: '/projects' },
-  { key: 'writing', path: '/blog' },
-  { key: 'frames', path: '/gallery' },
-  { key: 'now', path: '/now' },
+const SECTION_LINKS: Array<{ key: SectionKey; path: string; art: string }> = [
+  { key: 'work', path: '/projects', art: 'coral' },
+  { key: 'writing', path: '/blog', art: 'violet' },
+  { key: 'frames', path: '/gallery', art: 'cyan' },
+  { key: 'now', path: '/now', art: 'lime' },
 ]
+
+/** The ticker is built from real counts, not decoration. */
+function tickerUnits(counts: { posts: number; projects: number; frames: number }) {
+  return [
+    `${counts.posts} writing`,
+    '\u25C6',
+    `${counts.projects} projects`,
+    '\u25C6',
+    `${counts.frames} frames`,
+    '\u25C6',
+    '0 image files',
+    '\u25C6',
+    'generated imagery',
+    '\u25C6',
+    'fa / en',
+    '\u25C6',
+    'Next.js \u00B7 MDX \u00B7 Tailwind',
+    '\u25C6',
+    'RTL native',
+    '\u25C6',
+    'no database',
+    '\u25C6',
+  ]
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const locale = resolveLocale((await params).locale)
@@ -40,164 +61,251 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const allProjects = getProjects(locale)
   const frames = getGallery()
 
-  const posts = allPosts.slice(0, 3)
+  const posts = allPosts.slice(0, 4)
   const projects = allProjects.slice(0, 3)
 
+  const counts = {
+    posts: allPosts.length,
+    projects: allProjects.length,
+    frames: frames.length,
+  }
+
+  // Two-line hero: the first word solid, the rest outlined.
+  const nameParts = site.name[locale].split(/\s+/)
+  const heroFirst = nameParts[0] ?? site.name[locale]
+  const heroSecond = nameParts.slice(1).join(' ')
+
   const stats = [
-    { value: allPosts.length, label: dict.hero.stats.posts },
-    { value: allProjects.length, label: dict.hero.stats.projects },
-    { value: frames.length, label: dict.hero.stats.frames },
+    { value: counts.posts, pad: 2, suffix: '', label: dict.hero.stats.posts },
+    { value: counts.projects, pad: 2, suffix: '', label: dict.hero.stats.projects },
+    { value: counts.frames, pad: 2, suffix: '', label: dict.hero.stats.frames },
+    { value: 2, pad: 1, suffix: '', label: locale === 'fa' ? 'زبان' : 'languages' },
   ]
+
+  const units = tickerUnits(counts)
 
   return (
     <>
       {/* ------------------------------------------------------------ hero */}
-      <section className="hero grain relative isolate overflow-hidden" aria-label={site.name[locale]}>
-        {/* The living half of the artwork engine. The hero is pinned to the
-            site's signature palette so the first impression always reads as
-            this site; everything further down keeps the full range. */}
-        <div className="absolute inset-0" aria-hidden="true">
-          <LivingCanvas seed={`hero:${locale}`} intensity={1} inkSetId="ember" />
-        </div>
-        <div className="hero__veil" aria-hidden="true" />
-
-        <div className="container-page relative flex flex-col justify-center pt-16 pb-28">
-          <p className="text-[0.72rem] font-semibold tracking-[0.34em] text-accent uppercase">
-            {dict.hero.eyebrow}
+      <section className="hero" id="top">
+        <div className="hero-inner">
+          <p className="kicker">
+            <span className="pulse" />
+            {dict.hero.eyebrow} · {site.location?.[locale] ?? dict.hero.cue}
           </p>
 
-          <h1 className="hero__title mt-5 max-w-4xl">{site.name[locale]}</h1>
+          <h1 className="hero-title">
+            <span className="line">
+              <SplitText className="w1" text={heroFirst} />
+            </span>
+            {heroSecond && (
+              <span className="line">
+                <SplitText className="w2" text={heroSecond} />
+              </span>
+            )}
+          </h1>
 
-          <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted sm:text-xl">
-            {site.tagline[locale]}
+          <p className="hero-sub">
+            {site.bio[locale].split('.')[0]}
+            <span className="hl"> {site.tagline[locale]}</span>
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center gap-3">
-            <Link href={`/${locale}/projects`} className="btn btn-primary">
-              {dict.sections.work.label}
+          <div className="hero-actions">
+            <Link
+              href={`/${locale}/projects`}
+              className="btn btn-primary"
+              data-magnetic
+              data-cursor="link"
+            >
+              <span>{dict.sections.work.label}</span>
+              <Arrow />
             </Link>
-            <Link href={`/${locale}/blog`} className="btn btn-ghost">
+
+            <Link
+              href={`/${locale}/blog`}
+              className="btn btn-ghost"
+              data-magnetic
+              data-cursor="link"
+            >
               {dict.sections.writing.label}
             </Link>
           </div>
 
-          <dl className="mt-14 flex flex-wrap gap-x-10 gap-y-4">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex items-baseline gap-2">
-                <dt className="sr-only">{stat.label}</dt>
-                <dd className="tnum text-2xl font-bold text-ink">{stat.value}</dd>
-                <span className="text-xs text-ink-faint">{stat.label}</span>
-              </div>
-            ))}
-          </dl>
+          <div className="hero-meta">
+            <span>
+              <i>◆</i> generated imagery
+            </span>
+            <span>
+              <i>◆</i> 0 bytes of images
+            </span>
+            <span>
+              <i>◆</i> {locale === 'fa' ? 'راست‌به‌چپ' : 'RTL native'}
+            </span>
+          </div>
         </div>
 
-        <p className="hero__cue" aria-hidden="true">
-          {dict.hero.cue}
-          <span className="hero__cue-line" />
-        </p>
+        <a className="scroll-cue" href="#index" data-cursor="link">
+          <span>Scroll</span>
+          <i />
+        </a>
       </section>
 
-      <div className="container-page pb-16">
-        {/* --------------------------------------------------- sections */}
-        <section className="mt-16" aria-label={dict.home.orBrowse}>
-          <SectionLabel>{dict.home.orBrowse}</SectionLabel>
-
-          <ul className="mt-6 grid gap-5 sm:grid-cols-2">
-            {SECTION_LINKS.map(({ key, path }) => (
-              <li key={key}>
-                <Link href={`/${locale}${path}`} className="section-card group">
-                  <span className="section-card__art" aria-hidden="true">
-                    <GenerativeArt
-                      seed={`section:${key}:${locale}`}
-                      width={1000}
-                      height={640}
-                      density="compact"
-                    />
-                  </span>
-
-                  <span className="section-card__body">
-                    <span className="section-card__label">{dict.sections[key].label}</span>
-                    <span className="section-card__description">
-                      {dict.sections[key].description}
-                    </span>
-                    <span className="section-card__arrow" aria-hidden="true">
-                      →
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-
-        {/* ---------------------------------------------------- writing */}
-        {posts.length > 0 && (
-          <section className="mt-20" aria-label={dict.home.latestWriting}>
-            <div className="flex items-end justify-between gap-4">
-              <SectionLabel>{dict.home.latestWriting}</SectionLabel>
-              <Link
-                href={`/${locale}/blog`}
-                className="shrink-0 text-xs font-semibold text-accent hover:underline"
-              >
-                {dict.home.viewAll}
-              </Link>
-            </div>
-
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              {posts.map((post) => (
-                <PostCard key={post.slug} post={post} locale={locale} dict={dict} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ------------------------------------------------------- work */}
-        {projects.length > 0 && (
-          <section className="mt-20" aria-label={dict.home.selectedWork}>
-            <div className="flex items-end justify-between gap-4">
-              <SectionLabel>{dict.home.selectedWork}</SectionLabel>
-              <Link
-                href={`/${locale}/projects`}
-                className="shrink-0 text-xs font-semibold text-accent hover:underline"
-              >
-                {dict.home.viewAll}
-              </Link>
-            </div>
-
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              {projects.map((project) => (
-                <ProjectCard key={project.slug} project={project} locale={locale} dict={dict} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* -------------------------------------------------------- now */}
-        <section className="mt-20" aria-label={dict.home.nowHeading}>
-          <SectionLabel>{dict.home.nowHeading}</SectionLabel>
-
-          <Link href={`/${locale}/now`} className="now-teaser group mt-6">
-            <span className="now-teaser__art" aria-hidden="true">
-              <GenerativeArt
-                seed={`now-teaser:${locale}`}
-                width={1200}
-                height={420}
-                density="compact"
-              />
+      {/* ---------------------------------------------------------- ticker */}
+      <div className="ticker" aria-hidden="true">
+        <div className="ticker-row">
+          {[0, 1].map((pass) => (
+            <span key={pass} className="contents">
+              {units.map((unit, index) =>
+                unit === '\u25C6' ? (
+                  <b key={`${pass}-${index}`} className="px-0">
+                    {unit}
+                  </b>
+                ) : (
+                  <span key={`${pass}-${index}`}>{unit}</span>
+                ),
+              )}
             </span>
-
-            <span className="now-teaser__body">
-              <span className="now-teaser__title">{dict.sections.now.label}</span>
-              <span className="now-teaser__text">{dict.sections.now.description}</span>
-            </span>
-
-            <span className="now-teaser__arrow" aria-hidden="true">
-              →
-            </span>
-          </Link>
-        </section>
+          ))}
+        </div>
       </div>
+
+      {/* ----------------------------------------------------------- index */}
+      <section className="band" id="index">
+        <div className="sec-head" data-reveal>
+          <span className="sec-num">01</span>
+          <span>{dict.home.orBrowse}</span>
+        </div>
+
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {SECTION_LINKS.map(({ key, path }, index) => (
+            <Link
+              key={key}
+              href={`/${locale}${path}`}
+              className="card group"
+              data-tilt
+              data-reveal
+              data-cursor="card"
+            >
+              <div className="card-body">
+                <span className="card-idx">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{dict.sections[key].label}</h3>
+                <p>{dict.sections[key].description}</p>
+                <span className="card-meta">
+                  <span>{'\u2192'}</span>
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ---------------------------------------------------------- ledger */}
+      {posts.length > 0 && (
+        <section className="band">
+          <div className="sec-head" data-reveal>
+            <span className="sec-num">02</span>
+            <span>{dict.home.latestWriting}</span>
+          </div>
+
+          <div className="ledger mt-10" data-reveal>
+            {posts.map((post, index) => (
+              <Link
+                key={post.slug}
+                href={`/${locale}/blog/${post.slug}`}
+                className="row"
+                data-cursor="link"
+              >
+                <span className="row-idx">{String(index + 1).padStart(2, '0')}</span>
+                <span>
+                  <span className="row-title">{post.title}</span>
+                  <span className="row-sub">{post.summary}</span>
+                </span>
+                <span className="row-side">
+                  {post.date.slice(0, 7)} · {post.readingMinutes}
+                  {dict.common.minutes}
+                </span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="mt-8 flex justify-end">
+            <Link href={`/${locale}/blog`} className="btn btn-ghost btn-sm" data-cursor="link">
+              {dict.home.viewAll}
+            </Link>
+          </div>
+        </section>
+      )}
+
+      {/* ------------------------------------------------------------ work */}
+      {projects.length > 0 && (
+        <section className="band">
+          <div className="sec-head" data-reveal>
+            <span className="sec-num">03</span>
+            <span>{dict.home.selectedWork}</span>
+          </div>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
+              <ProjectCard key={project.slug} project={project} locale={locale} dict={dict} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ----------------------------------------------------------- stats */}
+      <section className="band">
+        <div className="sec-head" data-reveal>
+          <span className="sec-num">04</span>
+          <span>{dict.home.nowHeading}</span>
+        </div>
+
+        <div className="stats" data-reveal>
+          {stats.map((stat) => (
+            <div className="stat" key={stat.label}>
+              <b data-count={stat.value} data-pad={stat.pad} data-suffix={stat.suffix}>
+                {stat.value}
+              </b>
+              <span>{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ------------------------------------------------------------- cta */}
+      <section className="band pb-32 text-center">
+        <p className="kicker mx-auto">
+          <span className="pulse" />
+          {site.email}
+        </p>
+
+        <h2 className="sec-title mx-auto mt-8" data-split>
+          <SplitText text={dict.about.getInTouch.toUpperCase()} />
+        </h2>
+
+        <a
+          className="magnet-link mt-8 inline-block font-mono text-sm tracking-[0.1em] text-[var(--dim)]"
+          href={`mailto:${site.email}`}
+          data-magnetic
+          data-cursor="link"
+        >
+          {site.email}
+        </a>
+      </section>
     </>
+  )
+}
+
+function Arrow() {
+  return (
+    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+      <path
+        d="M2 8h11M9 4l4 4-4 4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   )
 }

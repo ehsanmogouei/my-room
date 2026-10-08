@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { PostList } from '@/components/blog/PostList'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { getPostSummaries } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
 import { resolveLocale } from '@/lib/types'
@@ -40,7 +40,7 @@ export default async function BlogPage({ params }: { params: Promise<{ locale: s
         size="compact"
       />
 
-      <div className="container-page py-12">
+      <div className="wrap band">
         <PostList posts={posts} locale={locale} dict={dict} />
       </div>
     </>

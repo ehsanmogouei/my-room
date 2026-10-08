@@ -85,25 +85,9 @@ export const site = {
   /* The room                                                            */
   /* ------------------------------------------------------------------ */
 
-  room: {
-    /**
-     * Palette for the 3D room and the 2D fallback map.
-     * Warm, dusk-lit, a little lo-fi.
-     */
-    palette: {
-      /** Ambient light, "day" mode. */
-      day: { background: '#e8dcc8', wall: '#d9c7ad', floor: '#8a6a4b', ambient: '#ffffff' },
-      /** Ambient light, "night" mode. */
-      night: { background: '#0b0f1a', wall: '#2b2a33', floor: '#2a2018', ambient: '#6f7fb8' },
-    },
-    /** Which mode visitors land in. Visitors can flip it with the lamp. */
+  theme: {
+    /** Which mode visitors land in before they touch the dock. */
     defaultMode: 'night' as 'day' | 'night',
-    /**
-     * Optional ambient loop. Drop an mp3 at `public/ambience.mp3`
-     * and set this to `/ambience.mp3`. Leave `null` for silence.
-     * It is always muted until the visitor presses play.
-     */
-    ambience: null as string | null,
   },
 
   /* ------------------------------------------------------------------ */

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { MdxContent } from '@/components/mdx/MdxContent'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { getNow } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
 import { resolveLocale } from '@/lib/types'
@@ -46,7 +46,7 @@ export default async function NowPage({ params }: { params: Promise<{ locale: st
         )}
       </PageHero>
 
-      <div className="container-page py-12">
+      <div className="wrap band">
         <div className="max-w-3xl">
           {now ? (
             <MdxContent source={now.body} locale={locale} />

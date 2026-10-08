@@ -1,37 +1,34 @@
-import { Clock } from 'lucide-react'
 import Link from 'next/link'
 
 import { GenerativeArt } from '@/components/art/GenerativeArt'
 import type { PostSummary } from '@/lib/content'
 import type { Dictionary } from '@/lib/dictionaries'
 import type { Locale } from '@/lib/types'
-import { cn, formatDate } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 
 /**
  * A post card.
  *
  * The cover is generated from the post's slug, so the same article shows the
- * same picture on the home page, on the blog index, in search results and in
- * the command palette — without an image file existing anywhere.
+ * same picture on the index, above the article, in search results and in the
+ * command palette — without an image file existing anywhere.
  */
 export function PostCard({
   post,
   locale,
   dict,
-  featured = false,
+  index = 0,
 }: {
   post: PostSummary
   locale: Locale
   dict: Dictionary
-  featured?: boolean
+  index?: number
 }) {
-  const { title, date, summary, tags } = post
-
   return (
-    <article className={cn('card group relative flex overflow-hidden', featured && 'sm:flex-row')}>
+    <article className="card group" data-tilt data-reveal data-cursor="card">
       <Link
         href={`/${locale}/blog/${post.slug}`}
-        className={cn('art-frame', featured ? 'sm:w-2/5' : 'aspect-[16/10]')}
+        className="card-art aspect-[16/10]"
         tabIndex={-1}
         aria-hidden="true"
       >
@@ -43,28 +40,26 @@ export function PostCard({
         />
       </Link>
 
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-faint">
-          <time dateTime={date}>{formatDate(date, locale)}</time>
-          <span aria-hidden="true">·</span>
-          <span className="inline-flex items-center gap-1">
-            <Clock className="size-3" aria-hidden="true" />
-            <span className="tnum">{post.readingMinutes}</span>
+      <div className="card-body">
+        <div className="flex items-center justify-between gap-3">
+          <span className="card-idx">
+            {post.date.slice(0, 7)} · {post.readingMinutes}
             {dict.common.minutes}
           </span>
+          {index > 0 && (
+            <span className="card-idx opacity-60">{String(index).padStart(2, '0')}</span>
+          )}
         </div>
 
-        <h3 className={cn('font-bold', featured ? 'text-xl' : 'text-lg')}>
-          <Link href={`/${locale}/blog/${post.slug}`} className="link-underline text-ink">
-            {title}
-          </Link>
+        <h3>
+          <Link href={`/${locale}/blog/${post.slug}`}>{post.title}</Link>
         </h3>
 
-        <p className="text-sm leading-relaxed text-ink-muted">{summary}</p>
+        <p>{post.summary}</p>
 
-        {tags.length > 0 && (
-          <ul className="mt-auto flex flex-wrap gap-1.5 pt-2">
-            {tags.map((tag) => (
+        {post.tags.length > 0 && (
+          <ul className="chip-strip mt-auto pt-5">
+            {post.tags.map((tag) => (
               <li key={tag} className="chip">
                 {tag}
               </li>
@@ -73,5 +68,29 @@ export function PostCard({
         )}
       </div>
     </article>
+  )
+}
+
+/** A compact one-line variant used in date-sorted lists. */
+export function PostRow({
+  post,
+  locale,
+  index,
+}: {
+  post: PostSummary
+  locale: Locale
+  index: number
+}) {
+  return (
+    <Link href={`/${locale}/blog/${post.slug}`} className="row" data-cursor="link">
+      <span className="row-idx">{String(index + 1).padStart(2, '0')}</span>
+      <span>
+        <span className="row-title">{post.title}</span>
+        <span className="row-sub">{post.summary}</span>
+      </span>
+      <span className="row-side">
+        {formatDate(post.date, locale, { year: 'numeric', month: 'short' })}
+      </span>
+    </Link>
   )
 }

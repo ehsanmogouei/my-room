@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 import { SocialIcon } from '@/components/shell/SocialIcon'
 import { SectionLabel } from '@/components/ui/PageHeader'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { site } from '@content/site'
 import { getDictionary } from '@/lib/dictionaries'
 import { SITE_REPO } from '@/lib/constants'
@@ -61,7 +61,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         size="compact"
       />
 
-      <div className="container-page py-12">
+      <div className="wrap band">
         <div className="grid gap-10 lg:grid-cols-[1fr_18rem]">
         <div className="max-w-2xl space-y-5 text-base leading-8 text-ink-muted">
           <p className="text-lg text-ink">{site.bio[locale]}</p>

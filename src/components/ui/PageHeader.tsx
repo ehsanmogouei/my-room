@@ -1,43 +1,73 @@
 import type { ReactNode } from 'react'
 
-import { cn } from '@/lib/utils'
+import { GenerativeArt } from '@/components/art/GenerativeArt'
 
-/** Consistent page heading used by every section except the room itself. */
-export function PageHeader({
+/**
+ * The banner at the top of a section or an article.
+ *
+ * The artwork is seeded from the page's own identity, so `/blog` and a single
+ * post never share a picture — and neither of them needed an image file.
+ */
+export function PageHero({
+  seed,
+  index,
   eyebrow,
   title,
   subtitle,
   children,
-  className,
+  size = 'default',
 }: {
+  seed: string
+  index?: string
   eyebrow?: string
   title: string
   subtitle?: string
   children?: ReactNode
-  className?: string
+  size?: 'default' | 'compact'
 }) {
+  const tall = size === 'default'
+
   return (
-    <header className={cn('border-b border-subtle pb-8', className)}>
-      {eyebrow && (
-        <p className="text-[0.7rem] font-semibold tracking-[0.22em] text-accent uppercase">
-          {eyebrow}
-        </p>
-      )}
-      <h1 className="mt-3 text-3xl font-bold text-ink sm:text-4xl">{title}</h1>
-      {subtitle && (
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted">{subtitle}</p>
-      )}
-      {children && <div className="mt-6">{children}</div>}
+    <header className="page-hero">
+      <div className="page-hero__art" aria-hidden="true">
+        <GenerativeArt seed={seed} density="rich" width={1800} height={tall ? 900 : 620} />
+      </div>
+      <div className="page-hero__veil" aria-hidden="true" />
+
+      <div
+        className="page-hero__inner wrap"
+        style={{
+          paddingTop: tall ? '9rem' : '7rem',
+          paddingBottom: tall ? '4rem' : '2.75rem',
+        }}
+      >
+        {(index || eyebrow) && (
+          <div className="sec-head">
+            {index && <span className="sec-num">{index}</span>}
+            {eyebrow && <span>{eyebrow}</span>}
+          </div>
+        )}
+
+        <h1 className="sec-title mt-6 max-w-4xl">{title}</h1>
+
+        {subtitle && (
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-[var(--dim)] sm:text-lg">
+            {subtitle}
+          </p>
+        )}
+
+        {children && <div className="mt-7">{children}</div>}
+      </div>
     </header>
   )
 }
 
-/** Small horizontal rule with a label, used to break long lists into groups. */
-export function SectionLabel({ children }: { children: ReactNode }) {
+/** Section label in the same chrome language: number, label, then a rule. */
+export function SectionLabel({ children, index }: { children: ReactNode; index?: string }) {
   return (
-    <h2 className="flex items-center gap-3 text-xs font-semibold tracking-[0.18em] text-ink-faint uppercase">
-      {children}
-      <span className="h-px flex-1 bg-subtle" aria-hidden="true" />
-    </h2>
+    <div className="sec-head">
+      {index && <span className="sec-num">{index}</span>}
+      <span>{children}</span>
+    </div>
   )
 }

@@ -2,9 +2,9 @@ import type { Metadata, Viewport } from 'next'
 import { notFound } from 'next/navigation'
 
 import { CommandPalette } from '@/components/CommandPalette'
-import { CursorLight } from '@/components/art/CursorLight'
+import { Chrome } from '@/components/chrome/Chrome'
+import { PageEffects } from '@/components/chrome/PageEffects'
 import { GrainDefs } from '@/components/art/GenerativeArt'
-import { PageField } from '@/components/art/PageField'
 import { Footer } from '@/components/shell/Footer'
 import { Header } from '@/components/shell/Header'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -111,8 +111,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#faf6ef' },
-    { media: '(prefers-color-scheme: dark)', color: '#0d1017' },
+    { media: '(prefers-color-scheme: light)', color: '#f4f5f2' },
+    { media: '(prefers-color-scheme: dark)', color: '#05060a' },
   ],
 }
 
@@ -177,8 +177,12 @@ export default async function LocaleLayout({
           crossOrigin="anonymous"
         />
         <script
-          // Sets the theme class before first paint. Must stay blocking.
-          dangerouslySetInnerHTML={{ __html: themeBootstrapScript(site.room.defaultMode) }}
+          // Sets the theme class before first paint, and marks the document as
+          // scripted so the split-text entrance only runs when JS is present.
+          // Must stay blocking.
+          dangerouslySetInnerHTML={{
+            __html: `${themeBootstrapScript(site.theme.defaultMode)}document.documentElement.classList.add('js');`,
+          }}
         />
         <script
           type="application/ld+json"
@@ -194,14 +198,19 @@ export default async function LocaleLayout({
         </a>
 
         <ThemeProvider>
-          {/* Fixed, generated, and behind everything. They sit at negative
-              z-index, which is why <html> carries the surface colour. */}
-          <PageField seed={`field:${locale}`} />
-          <CursorLight />
+          {/* The chrome layer: background stack, cursor, progress, readout and
+              dock. All fixed, all mounted once, none of it page-specific. */}
+          <Chrome locale={locale} section={dict.nav.home} />
+          <PageEffects />
           <GrainDefs />
 
           <div className="relative flex min-h-dvh flex-col">
-            <Header locale={locale} dict={dict} siteName={site.name[locale]} />
+            <Header
+              locale={locale}
+              dict={dict}
+              siteName={site.name[locale]}
+              handle={site.handle}
+            />
 
             <main id="content" className="flex-1">
               {children}

@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 
 import { GalleryGrid } from '@/components/gallery/GalleryGrid'
 import { SectionLabel } from '@/components/ui/PageHeader'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { getGallery, getLinks } from '@/lib/content'
 import { getDictionary } from '@/lib/dictionaries'
 import { resolveLocale } from '@/lib/types'
@@ -41,7 +41,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ locale
         size="compact"
       />
 
-      <div className="container-page py-12">
+      <div className="wrap band">
         <GalleryGrid items={items} locale={locale} dict={dict} />
 
         <section id="links" className="mt-20 scroll-mt-24" aria-label={dict.corkboard.label}>

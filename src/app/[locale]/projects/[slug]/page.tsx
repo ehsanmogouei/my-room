@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { MdxContent } from '@/components/mdx/MdxContent'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { ProjectCard } from '@/components/ui/ProjectCard'
 import { site } from '@content/site'
 import { getProject, getProjectSlugs, getProjects } from '@/lib/content'
@@ -176,7 +176,7 @@ export default async function ProjectPage({
         )}
       </PageHero>
 
-      <article className="container-page py-12">
+      <article className="wrap band">
         <div className="max-w-3xl">
           <MdxContent source={project.body} locale={locale} />
         </div>

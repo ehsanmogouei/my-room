@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 
 import { TableOfContents } from '@/components/blog/TableOfContents'
 import { MdxContent } from '@/components/mdx/MdxContent'
-import { PageHero } from '@/components/ui/PageHero'
+import { PageHero } from '@/components/ui/PageHeader'
 import { PostCard } from '@/components/ui/PostCard'
 import { site } from '@content/site'
 import { getPost, getPostSlugs, getPosts, getRelatedPosts, toPostSummary } from '@/lib/content'
@@ -157,7 +157,7 @@ export default async function PostPage({
         </div>
       </PageHero>
 
-      <article className="container-page py-12">
+      <article className="wrap band">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_16rem]">
         <div className="min-w-0 max-w-3xl">
           <MdxContent source={post.body} locale={locale} />
